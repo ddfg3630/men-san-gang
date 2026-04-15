@@ -1,6 +1,15 @@
 class_name DrawUtils
 ## Shared drawing utilities for rounded rects and text bars.
 
+static var _font: Font = null
+
+static func get_font() -> Font:
+	if _font == null:
+		_font = load("res://fonts/NotoSansTC-Regular.otf") as Font
+	if _font == null:
+		_font = ThemeDB.fallback_font
+	return _font
+
 static func draw_rounded_rect(canvas: CanvasItem, rect: Rect2, radius: float, color: Color) -> void:
 	canvas.draw_rect(Rect2(rect.position.x + radius, rect.position.y, rect.size.x - radius * 2, rect.size.y), color)
 	canvas.draw_rect(Rect2(rect.position.x, rect.position.y + radius, radius, rect.size.y - radius * 2), color)
@@ -21,8 +30,7 @@ static func draw_rounded_rect_outline(canvas: CanvasItem, rect: Rect2, radius: f
 	canvas.draw_arc(rect.position + Vector2(rect.size.x - radius, rect.size.y - radius), radius, 0, PI * 0.5, 12, color, width)
 
 static func draw_text_bar(canvas: CanvasItem, center: Vector2, text: String, font_size: int, bg_color := Color(0.28, 0.2, 0.12, 0.72)) -> Rect2:
-	## Draws a text bar with rounded background + shine. Returns the bar rect for hit testing.
-	var font: Font = ThemeDB.fallback_font
+	var font: Font = get_font()
 	var text_size: Vector2 = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
 	var padding := Vector2(32, 14)
 	var bar_size := text_size + padding * 2
@@ -39,14 +47,13 @@ static func draw_text_bar(canvas: CanvasItem, center: Vector2, text: String, fon
 	return bar_rect
 
 static func draw_color_button(canvas: CanvasItem, rect: Rect2, text: String, font_size: int, bg_color: Color, border_color: Color) -> void:
-	## Draws a colored button bar.
 	var radius := 12.0
 	draw_rounded_rect(canvas, rect, radius, bg_color)
 	var shine := Rect2(rect.position, Vector2(rect.size.x, rect.size.y * 0.45))
 	draw_rounded_rect(canvas, shine, radius, Color(1, 1, 1, 0.15))
 	draw_rounded_rect_outline(canvas, rect, radius, border_color, 1.5)
 
-	var font: Font = ThemeDB.fallback_font
+	var font: Font = get_font()
 	var ts: Vector2 = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
 	var cx := rect.position.x + (rect.size.x - ts.x) / 2
 	var cy := rect.position.y + (rect.size.y + ts.y) / 2 - 4
