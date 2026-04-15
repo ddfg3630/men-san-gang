@@ -1,0 +1,18 @@
+# Godot
+.godot/
+*.uid
+
+# Build outputs
+build/
+
+# Test scenes (keep scripts, ignore scenes for CI)
+# test_*.tscn
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Export config contains local paths
+export_presets.cfg
+.claude/
