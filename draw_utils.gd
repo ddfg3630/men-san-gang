@@ -1,14 +1,12 @@
 class_name DrawUtils
 ## Shared drawing utilities for rounded rects and text bars.
 
-static var _font: Font = null
+static var _font: Font = preload("res://fonts/NotoSansTC-Regular.otf")
 
 static func get_font() -> Font:
-	if _font == null:
-		_font = load("res://fonts/NotoSansTC-Regular.otf") as Font
-	if _font == null:
-		_font = ThemeDB.fallback_font
-	return _font
+	if _font != null:
+		return _font
+	return ThemeDB.fallback_font
 
 static func draw_rounded_rect(canvas: CanvasItem, rect: Rect2, radius: float, color: Color) -> void:
 	canvas.draw_rect(Rect2(rect.position.x + radius, rect.position.y, rect.size.x - radius * 2, rect.size.y), color)
