@@ -16,7 +16,8 @@ const ADJ: Dictionary = {
 	8: [5, 7],
 }
 
-const GOALS: Array = [0, 1, 2]
+const GOALS: Array = [0, 1, 2]       # top circles (opponent gets pushed here)
+const MIDDLE_ROW: Array = [3, 4, 5]  # winner must occupy this row to seal the win
 
 # ── Board creation ──
 
@@ -135,14 +136,20 @@ static func get_yield_moves(board: Array, yielder: int, blocked: int) -> Array:
 # ── Win condition ──
 
 static func check_win(board: Array, player: int) -> bool:
-	## Player wins when ALL opponent pieces are in goal circles.
+	## Player wins when:
+	## 1. ALL opponent pieces are in goal circles [0,1,2]
+	## 2. AND all player pieces occupy the middle row [3,4,5] (sealing the win)
+	## This ensures the winner makes the final move to complete the lockdown.
 	var opponent := 1 - player
-	var count := 0
 	for g in GOALS:
 		var gi: int = g
-		if board[gi] == opponent:
-			count += 1
-	return count == 3
+		if board[gi] != opponent:
+			return false
+	for m in MIDDLE_ROW:
+		var mi: int = m
+		if board[mi] != player:
+			return false
+	return true
 
 # ── Validation (for tests) ──
 
