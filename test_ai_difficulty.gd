@@ -106,6 +106,10 @@ func _play_game(depth_b: int, noise_b: int, depth_r: int, noise_r: int) -> Array
 			var ym: Array = yield_moves[randi() % yield_moves.size()]
 			last_move[other] = [ym[0], ym[1]]
 			board = BoardRules.apply_move(board, ym[0], ym[1])
+			# Clear blocked player's anti-repeat after yield
+			last_move[current] = []
+			if BoardRules.should_lift_antirepeat(board, other, last_move[other]):
+				last_move[other] = []
 			continue
 
 		var mv: Array

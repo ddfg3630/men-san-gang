@@ -243,9 +243,20 @@ func _apply_move(from: int, to: int) -> void:
 		_finish_normal_move()
 
 func _finish_yield() -> void:
-	_current_player = _yield_for
+	var unblocked := _yield_for
 	_yield_for = -1
 	_is_yield_move = false
+	_current_player = unblocked
+
+	# Board changed due to yield — clear the unblocked player's anti-repeat
+	# restriction since the back-and-forth context is broken.
+	_last_move[unblocked] = []
+
+	# Safety: also lift anti-repeat for the yielder if needed
+	var yielder := 1 - unblocked
+	if BoardRules.should_lift_antirepeat(_board, yielder, _last_move[yielder]):
+		_last_move[yielder] = []
+
 	_phase = Phase.PLAYING
 	_refresh_view()
 	if _is_ai_turn():

@@ -70,8 +70,22 @@ func _run_game(game_id: int) -> void:
 			last_move[other] = [ym[0], ym[1]]
 			board = BoardRules.apply_move(board, ym[0], ym[1])
 
+			# Clear blocked player's anti-repeat (board changed due to yield)
+			last_move[current] = []
+
+			# Also lift yielder's anti-repeat if needed
+			if BoardRules.should_lift_antirepeat(board, other, last_move[other]):
+				last_move[other] = []
+
 			if not BoardRules.has_any_move_raw(board, current):
 				_errors.append("Game %d Turn %d: Yield [%d→%d] didn't unblock player %d" % [game_id, turn, ym[0], ym[1], current])
+				return
+
+			# Verify unblocked player actually has moves WITH anti-repeat rules
+			var post_forbidden := BoardRules.get_forbidden_reverse(last_move[current])
+			var post_moves := BoardRules.get_all_moves(board, current, post_forbidden)
+			if post_moves.is_empty():
+				_errors.append("Game %d Turn %d: Yield unblocked raw moves but anti-repeat still blocks player %d" % [game_id, turn, current])
 				return
 			continue
 
