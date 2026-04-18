@@ -345,14 +345,27 @@ func _do_ai_yield() -> void:
 func _show_win(winner: int) -> void:
 	_phase = Phase.GAME_OVER
 	_win_label.text = "%s 獲勝！" % _player_name(winner)
-	_win_panel.visible = true
-	_refresh_view()
+	# Show the final board state first, then popup after a delay
+	_renderer.set_board(_board)
+	_renderer.clear_selection()
+	_renderer.set_status("%s 獲勝！" % _player_name(winner), "")
+	var t := get_tree().create_timer(1.2)
+	t.timeout.connect(func() -> void:
+		if is_inside_tree():
+			_win_panel.visible = true
+	, CONNECT_ONE_SHOT)
 
 func _show_draw() -> void:
 	_phase = Phase.GAME_OVER
 	_win_label.text = "平局！雙方都動不了"
-	_win_panel.visible = true
-	_refresh_view()
+	_renderer.set_board(_board)
+	_renderer.clear_selection()
+	_renderer.set_status("平局！雙方都動不了", "")
+	var t := get_tree().create_timer(1.2)
+	t.timeout.connect(func() -> void:
+		if is_inside_tree():
+			_win_panel.visible = true
+	, CONNECT_ONE_SHOT)
 
 # ══════════════════════════════════════════════════════════════
 #  UI CALLBACKS
