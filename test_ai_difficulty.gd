@@ -88,9 +88,10 @@ func _play_game(depth_b: int, noise_b: int, depth_r: int, noise_r: int) -> Array
 	while turn < MAX_TURNS:
 		turn += 1
 
-		for p in [0, 1]:
-			if BoardRules.check_win(board, p):
-				return [p, turn]
+		# Only the player who just moved can win (game.gd rule)
+		var prev := 1 - current
+		if turn > 1 and BoardRules.check_win(board, prev):
+			return [prev, turn]
 
 		if BoardRules.should_lift_antirepeat(board, current, last_move[current]):
 			last_move[current] = []

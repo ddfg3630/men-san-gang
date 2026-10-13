@@ -115,14 +115,6 @@ func _evaluate(board: Array, ai_id: int) -> int:
 		if board[gi] == ai_id:
 			score += W_SELF_GOAL
 
-	# Middle row control (AI needs to occupy [3,4,5] to seal the win)
-	for m in BoardRules.MIDDLE_ROW:
-		var mi: int = m
-		if board[mi] == ai_id:
-			score += 40  # good: closer to sealing
-		elif board[mi] == opponent:
-			score -= 30  # bad: opponent holds middle
-
 	# Mobility
 	var ai_moves := BoardRules.get_all_moves(board, ai_id)
 	var op_moves := BoardRules.get_all_moves(board, opponent)

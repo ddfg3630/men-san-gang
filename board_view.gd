@@ -200,7 +200,6 @@ func _draw() -> void:
 	if _shake > 0.0:
 		draw_set_transform(Vector2(randf_range(-_shake, _shake), randf_range(-_shake, _shake)) * _scale)
 	_draw_board_panel()
-	_draw_middle_band()
 	_draw_lines()
 	_draw_jars()
 	_draw_dots()
@@ -230,14 +229,6 @@ func _draw_board_panel() -> void:
 			var x := inset.position.x + inset.size.x * k / 24.0
 			pts.append(Vector2(x, y + sin(phase + k * 0.45) * amp))
 		draw_polyline(pts, Color(0.45, 0.28, 0.1, rng.randf_range(0.05, 0.11)), maxf(1.2 * s, 1.0), true)
-
-func _draw_middle_band() -> void:
-	## Highlights the row the winner must seal.
-	var s := _scale
-	var a := get_node_pos(3) - Vector2(50, 40) * s
-	var b := get_node_pos(5) + Vector2(50, 40) * s
-	var sb := UITheme.box(Color(1, 0.93, 0.7, 0.32), int(40 * s), Color(UITheme.ACCENT, 0.55), maxi(int(2 * s), 1))
-	draw_style_box(sb, Rect2(a, b - a))
 
 func _draw_lines() -> void:
 	var w := maxf(7.0 * _scale, 2.0)

@@ -289,15 +289,11 @@ func _update_cards() -> void:
 		var role := ""
 		if GameConfig.vs_ai and GameConfig.ai_side >= 0:
 			role = "（電腦）" if p == GameConfig.ai_side else "（你）"
-		var middle := 0
-		var trapped := 0
-		for m in BoardRules.MIDDLE_ROW:
-			if _board[m] == p:
-				middle += 1
+		var trapped := [0, 0]
 		for g in BoardRules.GOALS:
-			if _board[g] == p:
-				trapped += 1
-		_cards[p].set_info(UITheme.PLAYER_NAMES[p] + role, "封中排 %d/3 · 被困 %d/3" % [middle, trapped])
+			if _board[g] >= 0:
+				trapped[_board[g]] += 1
+		_cards[p].set_info(UITheme.PLAYER_NAMES[p] + role, "困住對手 %d/3 · 被困 %d/3" % [trapped[1 - p], trapped[p]])
 		var active: bool = not picking and _current_player == p
 		if _phase == Phase.GAME_OVER:
 			active = BoardRules.check_win(_board, p)
@@ -472,10 +468,10 @@ func _finish_yield() -> void:
 	_on_turn_changed()
 
 func _finish_normal_move() -> void:
-	for p in [0, 1]:
-		if BoardRules.check_win(_board, p):
-			_show_win(p)
-			return
+	# Only the player who just moved can win, so the winner makes the final move.
+	if BoardRules.check_win(_board, _current_player):
+		_show_win(_current_player)
+		return
 
 	_current_player = 1 - _current_player
 
@@ -567,15 +563,15 @@ func _show_win(winner: int) -> void:
 	_bg.set_tint(UITheme.PLAYER_COLORS[winner], 0.1)
 	_sfx.play("win")
 	_fx.confetti([UITheme.PLAYER_COLORS[winner], UITheme.ACCENT, UITheme.PLAYER_COLORS[winner].lightened(0.4), UITheme.PAPER], 90)
-	for m in BoardRules.MIDDLE_ROW:
-		_fx.ring(_board_global(m), UITheme.ACCENT, 20, 90 * _board_view.board_scale(), 0.9, 6)
+	for g in BoardRules.GOALS:
+		_fx.ring(_board_global(g), UITheme.PLAYER_COLORS[winner], 20, 90 * _board_view.board_scale(), 0.9, 6)
 	var human_lost := GameConfig.vs_ai and winner == GameConfig.ai_side
 	if GameConfig.vs_ai:
 		_win_title.text = "電腦獲勝" if human_lost else "你贏了！"
 	else:
 		_win_title.text = "%s獲勝！" % UITheme.PLAYER_NAMES[winner]
 	_win_title.add_theme_color_override("font_color", UITheme.PLAYER_COLORS[winner])
-	_win_sub.text = "對手三子盡數入缸，中排已被封住"
+	_win_sub.text = "對手三子盡數入缸，無路可逃"
 	_status_label.text = _win_title.text
 	_schedule(_win_modal.open, RESULT_DELAY)
 

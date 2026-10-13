@@ -39,11 +39,12 @@ func _run_game(game_id: int) -> void:
 			_errors.append("Game %d Turn %d: %s" % [game_id, turn, err])
 			return
 
-		for p in [0, 1]:
-			if BoardRules.check_win(board, p):
-				_wins[p] += 1
-				_total_turns += turn
-				return
+		# Only the player who just moved can win (game.gd rule)
+		var prev := 1 - current
+		if turn > 1 and BoardRules.check_win(board, prev):
+			_wins[prev] += 1
+			_total_turns += turn
+			return
 
 		# Auto-lift anti-repeat if needed
 		if BoardRules.should_lift_antirepeat(board, current, last_move[current]):

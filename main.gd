@@ -59,7 +59,7 @@ func _ready() -> void:
 	rules_btn.add_theme_font_size_override("font_size", 20)
 	buttons.add_child(rules_btn)
 
-	var footer := UITheme.make_label("把對手三子困進缸裡，再封住中排", 16, "MutedLabel")
+	var footer := UITheme.make_label("把對手三子全困進缸裡就贏了", 16, "MutedLabel")
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vb.add_child(footer)
 
