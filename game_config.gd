@@ -4,6 +4,7 @@ extends Node
 var vs_ai: bool = false
 var ai_side: int = -1    # -1 = not chosen, 0 = blue, 1 = red
 var ai_difficulty: int = -1  # 0=easy, 1=normal, 2=hard
+var sound_on: bool = true
 
 func get_ai_depth() -> int:
 	match ai_difficulty:
